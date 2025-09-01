@@ -9,5 +9,5 @@ const TGAColor cyan = TGAColor(0, 255, 255, 255);
 const TGAColor yellow = TGAColor(255, 255, 0, 255);
 const TGAColor magenta = TGAColor(255, 0, 255, 255);
 
-//draw line from point a to point b on framebuffer
+//draw line from point a to point b on framebuffer of color
 void line(int ax, int ay, int bx, int by, TGAImage& framebuffer, TGAColor const& color);
