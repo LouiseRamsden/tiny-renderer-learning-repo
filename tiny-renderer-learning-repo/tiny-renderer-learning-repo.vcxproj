@@ -127,9 +127,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="gfxlib.h" />
     <ClInclude Include="tgaimage.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="gfxlib.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tgaimage.cpp" />
   </ItemGroup>
