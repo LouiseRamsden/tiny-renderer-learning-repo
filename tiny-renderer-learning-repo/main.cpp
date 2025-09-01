@@ -4,45 +4,58 @@ const TGAColor white = TGAColor(255, 255, 255, 255);
 const TGAColor red = TGAColor(255, 0, 0, 255);
 const TGAColor blue = TGAColor(0, 0, 255, 255);
 const TGAColor green = TGAColor(0, 255, 0,255);
-void line(int x0, int y0, int x1, int y1, TGAImage& image, TGAColor const& color) 
+
+/*
+* line()
+* assuming line isnt steep
+* 
+* for every pixel of the x axis
+*	add pixel
+*	if y delta > 0.5 then
+*		move y up a pixel
+* 
+* steepness switches axis and makes it mirrored
+* 
+* the optimization essentially just removes the floats by using dy * 2 and dx * 2 but it essentially works the same just with alot less floating point maths
+* 
+*/
+void line(int ax, int ay, int bx, int by, TGAImage& framebuffer, TGAColor const& color) 
 {
 	//determine which axis is the steepest, then swap and transpose
-	bool steep = false;
-	if (std::abs(x0 - x1) < std::abs(y0 - y1)) 
+	bool steep = std::abs(ax - bx) < std::abs(ay - by);
+	if (steep) 
 	{
-		std::swap(x0, y0);
-		std::swap(x1, y1);
-		steep = true;
+		std::swap(ax, ay);
+		std::swap(bx, by);
 	}
-	if(x0 > x1)
+	if(ax > bx)
 	{
-		std::swap(x0, x1);
-		std::swap(y0, y1);
+		std::swap(ax, bx);
+		std::swap(ay, by);
 	}
 	//difference between both points
-	int dx = x1 - x0;
-	int dy = y1 - y0;
+	int dx = bx - ax;
+	int dy = by - ay;
 	int derror2 = std::abs(dy) * 2; //derror2 because its equivalent to abs(dy) * 2
 	int error2 = 0;
-	int y = y0;
+	int y = ay;
 	
 	//for every x pixel
-	for (int x = x0; x <= x1; x++) 
+	for (int x = ax; x <= bx; x++) 
 	{
 		if (steep) 
 		{
-			image.set(y, x, color);
+			framebuffer.set(y, x, color);
 		}
 		else 
 		{
-			image.set(x, y, color);
+			framebuffer.set(x, y, color);
 		}
 
-		//every loop add to error2, if its greater than 0.5f then start drawing on the next pixel of y 
 		error2 += derror2;
 		if (error2 > dx) 
 		{
-			y += (y1 > y0 ? 1 : -1); //if first point is above or below adjust accordingly
+			y += (by > ay ? 1 : -1); //if first point is above or below adjust accordingly
 			error2 -= dx * 2;
 		}
 	}
