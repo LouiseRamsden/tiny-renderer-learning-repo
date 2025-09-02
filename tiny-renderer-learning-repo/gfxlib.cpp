@@ -1,4 +1,8 @@
+
+
 #include "gfxlib.h"
+#include "geometry.h"
+
 
 
 
@@ -58,9 +62,47 @@ void line(int ax, int ay, int bx, int by, TGAImage& framebuffer, TGAColor const&
 	}
 }
 
+std::pair<Vec2i, Vec2i> findBoundingBox(int ax, int ay, int bx, int by, int cx, int cy) 
+{
+	Vec2i min, max;
+
+	min = {
+		std::min(ax,std::min(bx,cx)),
+		std::min(ay, std::min(by,cy))
+	};
+	max = {
+		std::max(ax,std::max(bx,cx)),
+		std::max(ay, std::max(by,cy))
+	};
+	return { min, max };
+}
+
+double signedTriangleArea(int ax, int ay, int bx, int by, int cx, int cy) 
+{
+	return 0.5 * ((by - ay) * (bx + ax) + (cy - by) * (cx + bx) + (ay - cy) * (ax + cx));
+}
+
 void triangle(int ax, int ay, int bx, int by, int cx, int cy, TGAImage& framebuffer, TGAColor const& color) 
 {
-	line(ax, ay, bx, by, framebuffer, color);
-	line(bx, by, cx, cy, framebuffer, color);
-	line(cx, cy, ax, ay, framebuffer, color);
+	std::pair<Vec2i, Vec2i> bb = findBoundingBox(ax, ay, bx, by, cx, cy);
+
+	double totalArea = signedTriangleArea(ax,ay,bx,by,cx,cy);
+
+#pragma omp parallel for
+	for (int x = bb.first.x; x <= bb.second.x; x++) 
+	{
+		for (int y = bb.first.y; y <= bb.second.y; y++) 
+		{
+			//find barycentrix coordinates for each pixel in bounding box
+			//discard if negative
+
+			//barycentric coordinates are equivalent to: 
+			// a = Area(point, B,C) / totalArea, b = Area(point, C, A) / totalArea, g = Area(point, A,B) / totalArea
+			double a = signedTriangleArea(x,y,bx,by,cx,cy) / totalArea;
+			double b = signedTriangleArea(x,y,cx,cy,ax,ay) / totalArea;
+			double g = signedTriangleArea(x,y,ax,ay,bx,by) / totalArea;
+			if (a < 0 || b < 0 || g < 0) continue;
+			framebuffer.set(x, y, {uint8_t(a * 255), uint8_t(b*255), uint8_t(g*255), 255});
+		}
+	}
 }
