@@ -57,3 +57,10 @@ void line(int ax, int ay, int bx, int by, TGAImage& framebuffer, TGAColor const&
 		}
 	}
 }
+
+void triangle(int ax, int ay, int bx, int by, int cx, int cy, TGAImage& framebuffer, TGAColor const& color) 
+{
+	line(ax, ay, bx, by, framebuffer, color);
+	line(bx, by, cx, cy, framebuffer, color);
+	line(cx, cy, ax, ay, framebuffer, color);
+}
