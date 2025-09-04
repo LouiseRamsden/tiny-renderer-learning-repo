@@ -62,19 +62,17 @@ void line(int ax, int ay, int bx, int by, TGAImage& framebuffer, TGAColor const&
 	}
 }
 
-std::tuple<Vec2i, Vec2i>const& findBoundingBox(int ax, int ay, int bx, int by, int cx, int cy) 
+constexpr std::tuple<Vec2i, Vec2i> const& findBoundingBox(int ax, int ay, int bx, int by, int cx, int cy) 
 {
-	Vec2i min, max;
-
-	min = {
-		std::min(ax,std::min(bx,cx)),
-		std::min(ay, std::min(by,cy))
+	return { 
+		{
+			std::min(ax,std::min(bx,cx)),
+			std::min(ay, std::min(by,cy))},
+		{
+			std::max(ax,std::max(bx,cx)),
+			std::max(ay, std::max(by,cy))
+		} 
 	};
-	max = {
-		std::max(ax,std::max(bx,cx)),
-		std::max(ay, std::max(by,cy))
-	};
-	return { min, max };
 }
 
 constexpr double signedTriangleArea(int ax, int ay, int bx, int by, int cx, int cy) 
