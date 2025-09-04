@@ -52,6 +52,9 @@
     <Image Include="output\output.tga">
       <Filter>Output</Filter>
     </Image>
+    <Image Include="output\zbuffer.tga">
+      <Filter>Output</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Object Include="assets\diablo3_pose.obj" />

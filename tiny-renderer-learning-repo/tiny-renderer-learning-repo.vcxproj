@@ -140,6 +140,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="output\output.tga" />
+    <Image Include="output\zbuffer.tga" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="assets\diablo3_pose.obj">

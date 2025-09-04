@@ -62,6 +62,8 @@ struct TGAColor {
 	}
 };
 
+inline TGAColor genRandColor() { return { (uint32_t)rand() % 255,(uint32_t)rand() % 255,(uint32_t)rand() % 255,(uint32_t)rand() % 255 }; }
+
 
 class TGAImage {
 protected:

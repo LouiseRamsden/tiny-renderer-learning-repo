@@ -82,11 +82,12 @@ double signedTriangleArea(int ax, int ay, int bx, int by, int cx, int cy)
 	return 0.5 * ((by - ay) * (bx + ax) + (cy - by) * (cx + bx) + (ay - cy) * (ax + cx));
 }
 
-void triangle(int ax, int ay, int bx, int by, int cx, int cy, TGAImage& framebuffer, TGAColor const& color) 
+void triangle(int ax, int ay, int az, int bx, int by, int bz, int cx, int cy, int cz, TGAImage& zbuffer, TGAImage& framebuffer, TGAColor const& color) 
 {
 	std::pair<Vec2i, Vec2i> bb = findBoundingBox(ax, ay, bx, by, cx, cy);
 
 	double totalArea = signedTriangleArea(ax,ay,bx,by,cx,cy);
+	if (totalArea < 1) return;
 
 #pragma omp parallel for
 	for (int x = bb.first.x; x <= bb.second.x; x++) 
@@ -102,7 +103,10 @@ void triangle(int ax, int ay, int bx, int by, int cx, int cy, TGAImage& framebuf
 			double b = signedTriangleArea(x,y,cx,cy,ax,ay) / totalArea;
 			double g = signedTriangleArea(x,y,ax,ay,bx,by) / totalArea;
 			if (a < 0 || b < 0 || g < 0) continue;
-			framebuffer.set(x, y, {uint8_t(a * 255), uint8_t(b*255), uint8_t(g*255), 255});
+			uint8_t z = (uint8_t)(a * az + b * bz + g * cz);
+			if (z <= zbuffer.get(x, y).val) continue; //if the value is further than the current one on the zbuffer, dont draw it
+			zbuffer.set(x, y, {z,z,z, 255});
+			framebuffer.set(x, y, color);
 		}
 	}
 }

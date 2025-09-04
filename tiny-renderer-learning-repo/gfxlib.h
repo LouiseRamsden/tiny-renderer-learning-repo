@@ -12,4 +12,4 @@ const TGAColor magenta = TGAColor(255, 0, 255, 255);
 
 //draw line from point a to point b on framebuffer of color
 void line(int ax, int ay, int bx, int by, TGAImage& framebuffer, TGAColor const& color);
-void triangle(int ax, int ay, int bx, int by, int cx, int xy, TGAImage& framebuffer, TGAColor const& color);
+void triangle(int ax, int ay,int az, int bx, int by, int bz, int cx, int cy, int cz,TGAImage& zbuffer, TGAImage& framebuffer, TGAColor const& color);
