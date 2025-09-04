@@ -62,7 +62,7 @@ void line(int ax, int ay, int bx, int by, TGAImage& framebuffer, TGAColor const&
 	}
 }
 
-std::pair<Vec2i, Vec2i> findBoundingBox(int ax, int ay, int bx, int by, int cx, int cy) 
+std::tuple<Vec2i, Vec2i>const& findBoundingBox(int ax, int ay, int bx, int by, int cx, int cy) 
 {
 	Vec2i min, max;
 
@@ -77,24 +77,24 @@ std::pair<Vec2i, Vec2i> findBoundingBox(int ax, int ay, int bx, int by, int cx, 
 	return { min, max };
 }
 
-double signedTriangleArea(int ax, int ay, int bx, int by, int cx, int cy) 
+constexpr double signedTriangleArea(int ax, int ay, int bx, int by, int cx, int cy) 
 {
 	return 0.5 * ((by - ay) * (bx + ax) + (cy - by) * (cx + bx) + (ay - cy) * (ax + cx));
 }
 
 void triangle(int ax, int ay, int az, int bx, int by, int bz, int cx, int cy, int cz, TGAImage& zbuffer, TGAImage& framebuffer, TGAColor const& color) 
 {
-	std::pair<Vec2i, Vec2i> bb = findBoundingBox(ax, ay, bx, by, cx, cy);
+	auto [bbMin, bbMax] = findBoundingBox(ax, ay, bx, by, cx, cy);
 
 	double totalArea = signedTriangleArea(ax,ay,bx,by,cx,cy);
 	if (totalArea < 1) return;
 
 #pragma omp parallel for
-	for (int x = bb.first.x; x <= bb.second.x; x++) 
+	for (int x = bbMin.x; x <= bbMax.x; x++) 
 	{
-		for (int y = bb.first.y; y <= bb.second.y; y++) 
+		for (int y = bbMin.y; y <= bbMax.y; y++) 
 		{
-			//find barycentrix coordinates for each pixel in bounding box
+			//find barycentric coordinates for each pixel in bounding box
 			//discard if negative
 
 			//barycentric coordinates are equivalent to: 
@@ -105,7 +105,7 @@ void triangle(int ax, int ay, int az, int bx, int by, int bz, int cx, int cy, in
 			if (a < 0 || b < 0 || g < 0) continue;
 			uint8_t z = (uint8_t)(a * az + b * bz + g * cz);
 			if (z <= zbuffer.get(x, y).val) continue; //if the value is further than the current one on the zbuffer, dont draw it
-			zbuffer.set(x, y, {z,z,z, 255});
+			zbuffer.set(x, y, {z,z,z,255});
 			framebuffer.set(x, y, color);
 		}
 	}

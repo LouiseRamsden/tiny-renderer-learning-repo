@@ -10,11 +10,11 @@ constexpr int g_height = 2000;
 Model* model = nullptr;
 
 
-std::tuple<int, int, int> projectTriangleToScreen(Vec3f v, int width, int height)
+constexpr std::tuple<int, int, int> projectTriangleToFramebuffer(Vec3f const& v, int w, int h)
 {
 	return { 
-		(int)(((v.x + 1.0f) * width) / 2.0f),
-		(int)(((v.y + 1.0f) * height) / 2.0f),
+		(int)(((v.x + 1.0f) * w) / 2.0f),
+		(int)(((v.y + 1.0f) * h) / 2.0f),
 		(int)(((v.z + 1.0f) * 255) / 2.0f)
 	};
 }
@@ -30,9 +30,9 @@ int main(int argc, char** argv)
 	{
 		std::vector<int> face = model->face(i);
 
-		auto [ax, ay, az] = projectTriangleToScreen(model->vert(face[0]), g_width, g_height);
-		auto [bx, by, bz] = projectTriangleToScreen(model->vert(face[1]), g_width, g_height);
-		auto [cx, cy, cz] = projectTriangleToScreen(model->vert(face[2]), g_width, g_height);
+		auto [ax, ay, az] = projectTriangleToFramebuffer(model->vert(face[0]), g_width,g_height);
+		auto [bx, by, bz] = projectTriangleToFramebuffer(model->vert(face[1]), g_width,g_height);
+		auto [cx, cy, cz] = projectTriangleToFramebuffer(model->vert(face[2]), g_width,g_height);
 
 		triangle(ax,ay,az,bx,by,bz,cx,cy,cz, 
 			zbuffer,

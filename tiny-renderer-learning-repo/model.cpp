@@ -45,10 +45,10 @@ int Model::nfaces() {
     return (int)faces_.size();
 }
 
-std::vector<int> Model::face(int idx) {
+std::vector<int> const& Model::face(int idx) {
     return faces_[idx];
 }
 
-Vec3f Model::vert(int i) {
+Vec3f const& Model::vert(int i) {
     return verts_[i];
 }
